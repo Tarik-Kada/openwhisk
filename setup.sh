@@ -6,27 +6,28 @@ bash "./openwhisk-deploy-kube/deploy/kind/start-kind.sh"
 # Assigne invoker role to a worker node
 kubectl label node --all openwhisk-role=invoker
 
-# Build OpenWhisk components
-cd openwhisk
-sudo ./gradlew distDocker
-cd ..
+# # Build OpenWhisk components
+# cd openwhisk
+# sudo ./gradlew distDocker
+# cd ..
 
-components=("controller" "invoker" "scheduler" "user-events" "scala")
+# components=("controller" "invoker" "scheduler" "user-events" "scala")
 
-for component in "${components[@]}"; do
-  # Load the image into your KinD cluster
-  docker tag "whisk/$component" "whisk/$component:latest"
+# for component in "${components[@]}"; do
+#   # Load the image into your KinD cluster
+#   docker tag "whisk/$component" "whisk/$component:latest"
 
-  kind load docker-image whisk/$component
-done
-echo "Images loaded successfully."
+#   kind load docker-image whisk/$component
+# done
+# echo "Images loaded successfully."
 
 # Add OpenWhisk Helm repo and update
 helm repo add openwhisk https://openwhisk.apache.org/charts
 helm repo update
 
 # Install OpenWhisk using Helm
-helm install owdev openwhisk/openwhisk -n openwhisk --create-namespace -f ./openwhisk-deploy-kube/deploy/kind/mycluster.yaml
+helm install owdev openwhisk/openwhisk -n openwhisk --create-namespace
+# helm install owdev openwhisk/openwhisk -n openwhisk --create-namespace -f ./openwhisk-deploy-kube/deploy/kind/mycluster.yaml
 
 echo "Waiting for OpenWhisk to be ready..."
 sleep 30
